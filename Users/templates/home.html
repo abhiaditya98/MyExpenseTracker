@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Expense Tracker - Home</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+      }
+      .dashboard-container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        background: white;
+        padding: 15px 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+      h1,
+      h2 {
+        margin: 0;
+      }
+      .logout-btn {
+        color: #dc3545;
+        text-decoration: none;
+        font-weight: bold;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      /* Stats Summary Cards Layout */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+      .card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        text-align: center;
+      }
+      .card h3 {
+        margin: 0 0 10px 0;
+        color: #666;
+        font-size: 14px;
+        text-transform: uppercase;
+      }
+      .card p {
+        margin: 0;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .text-income {
+        color: #28a745;
+      }
+      .text-expense {
+        color: #dc3545;
+      }
+      .balance {
+        color: #007bff;
+      }
+
+      /* Main Content Layout Split */
+      .main-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+      }
+      .section-block {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+      }
+
+      /* Table Styling */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+      }
+      th {
+        background-color: #f8f9fa;
+        color: #555;
+      }
+
+      /* Form Layout Group Styles */
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+      }
+      .submit-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .submit-btn:hover {
+        background-color: #0056b3;
+      }
+      .category-btn {
+        background-color: #6c757d;
+      }
+      .category-btn:hover {
+        background-color: #5a6268;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <!-- Top Navigation Header -->
+      <header>
+        <h2>Welcome, {{ user.username }}!</h2>
+        <form method="POST" action="{% url 'users:logout' %}" style="display: inline">
+          {% csrf_token %}
+          <button type="submit" class="logout-btn">Log Out</button>
+        </form>
+      </header>
+
+      <!-- KPI Summary Cards Grid Block -->
+      <div class="stats-grid">
+        <div class="card">
+          <h3>Total Income</h3>
+          <p class="income">&#x20B9;{{ total_income }}</p>
+        </div>
+        <div class="card">
+          <h3>Total Expenses</h3>
+          <p class="expense">&#x20B9;{{ total_expenses }}</p>
+        </div>
+        <div class="card">
+          <h3>Net Balance</h3>
+          <p class="balance">&#x20B9;{{ net_balance }}</p>
+        </div>
+      </div>
+      <!-- Main Layout Body Section Split -->
+      <div class="main-content">
+        <!-- Left Side Column: Ledger Transactions List History Table -->
+        <div class="section-block">
+          <h3>Transaction History</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Action</th>
+                <!-- Added exact matching column header -->
+              </tr>
+            </thead>
+            <tbody>
+              {% for txn in transactions %}
+                <tr>
+                  <td>{{ txn.date|date:"d-m-Y" }}</td>
+                  <td>{{ txn.title }}</td>
+                  <td>{{ txn.category.name|default:"Uncategorized" }}</td>
+                  <!-- Keeping your exact clean amount block layout -->
+                  <td>
+                    <span class="{% if txn.transaction_type == 'income' %}text-income{% else %}text-expense{% endif %}"
+                    >
+                      {% if txn.transaction_type == 'expense' %}
+                        -
+                      {% else %} 
+                        +
+                      {% endif %}
+                      &#x20B9;{{ txn.amount|default:"0.00" }}
+                    </span>
+                  </td>
+                  <!-- Exact structural addition for the secure deletion form -->
+                  <td>
+                    <form
+                      method="POST"
+                      action="{% url 'expenses:delete_transaction' transaction_id=txn.id %}"
+                      onsubmit="
+                        return confirm(
+                          'Are you sure you want to delete this entry?',
+                        );
+                      "
+                      style="display: inline"
+                    >
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        style="
+                          background-color: #dc3545;
+                          color: white;
+                          border: none;
+                          padding: 6px 12px;
+                          border-radius: 4px;
+                          cursor: pointer;
+                          font-size: 13px;
+                        "
+                      >
+                        Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" style="text-align: center; color: #888">
+                    <!-- Updated alignment span to 5 -->
+                    No transactions logged this month.
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Right Side Column: Form Group Collection Inputs Panel -->
+        <div>
+          <!-- Panel Block 1: Add Expense Entry -->
+          <div class="section-block" style="border-left: 5px solid #dc3545">
+            <h3>Log New Expense</h3>
+            <form method="POST" action="{% url 'expenses:add_expense' %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="exp_title">Expense Title</label>
+                <input
+                  type="text"
+                  id="exp_title"
+                  name="title"
+                  required
+                  placeholder="Swiggy, Rent, Petrol..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="exp_amount">Amount (&#x20B9;)</label>
+                <input
+                  type="text"
+                  id="exp_amount"
+                  name="amount"
+                  required
+                  placeholder="0.00"
+                  inputmode="numeric"
+                  title="Please enter a valid number"
+                  oninput="formatIndianCurrency(this)"
+                />
+              </div>
+              <div class="form-group">
+                <label for="exp_category">Category Tag</label>
+                <select id="exp_category" name="category">
+                  <option value="">-- No Category --</option>
+                  {% for cat in categories %}
+                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <button
+                type="submit"
+                class="submit-btn"
+                style="background-color: #dc3545"
+              >
+                Save Expense
+              </button>
+            </form>
+          </div>
+
+          <!-- Panel Block 2: Add Income Entry -->
+          <div class="section-block" style="border-left: 5px solid #28a745">
+            <h3>Log New Income</h3>
+            <form method="POST" action="{% url 'expenses:add_income' %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="inc_title">Income Title</label>
+                <input
+                  type="text"
+                  id="inc_title"
+                  name="title"
+                  required
+                  placeholder="Salary, Freelance, Cashback..."
+                />
+              </div>
+              <div class="form-group">
+                <label for="inc_amount">Amount (&#x20B9;)</label>
+                <input
+                  type="text"
+                  id="inc_amount"
+                  name="amount"
+                  required
+                  placeholder="0.00"
+                  inputmode="numeric"
+                  title="Please enter a valid number"
+                  oninput="formatIndianCurrency(this)"
+                />
+              </div>
+              <div class="form-group">
+                <label for="inc_category">Category Tag</label>
+                <select id="inc_category" name="category">
+                  <option value="">-- No Category --</option>
+                  {% for cat in categories %}
+                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <button
+                type="submit"
+                class="submit-btn"
+                style="background-color: #28a745"
+              >
+                Save Income
+              </button>
+            </form>
+          </div>
+
+          <!-- Panel Block 3: Create Custom Category Tag Dropdown Handler -->
+          <div class="section-block">
+            <h3>Create Custom Category</h3>
+             <form method="POST" action="{% url 'expenses:add_category' %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="category_name">Category Name</label>
+                <input
+                  type="text"
+                  id="category_name"
+                  name="category_name"
+                  required
+                  placeholder="Food, Salary, Utilities..."
+                />
+              </div>
+              <button type="submit" class="submit-btn category-btn">
+                Add to Dropdowns
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    function formatIndianCurrency(input) {
+      // 1. Remove all characters except numbers and a single decimal point
+      let value = input.value.replace(/[^0-9.]/g, "");
+
+      // 2. Split the value into integer and decimal parts
+      let parts = value.split(".");
+      let integerPart = parts[0];
+      let decimalPart = parts.length > 1 ? "." + parts[1].slice(0, 2) : ""; // Limit decimals to 2 places
+
+      // 3. Format the integer part using the Indian Numbering System (en-IN)
+      if (integerPart) {
+        let num = parseFloat(integerPart);
+        if (!isNaN(num)) {
+          integerPart = num.toLocaleString("en-IN");
+        }
+      }
+
+      // 4. Update the input field with the formatted string
+      input.value = integerPart + decimalPart;
+    }
+
+    // 5. Clean up commas automatically right before the form submits to the server
+    document.querySelectorAll("form").forEach((form) => {
+      form.addEventListener("submit", function () {
+        let amountInput = this.querySelector('input[name="amount"]');
+        if (amountInput) {
+          // Strip out commas (e.g., "50,000.00" becomes "50000.00") so Django's DecimalField doesn't crash
+          amountInput.value = amountInput.value.replace(/,/g, "");
+        }
+      });
+    });
+  </script>
+</html>

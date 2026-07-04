@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f4f9; margin: 0; }
+        .login-container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { margin-bottom: 20px; color: #333; text-align: center; }
+        form p { margin-bottom: 15px; }
+        form input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; margin-top: 5px; }
+        .btn { width: 100%; padding: 10px; background-color: #28a745; border: none; border-radius: 4px; color: white; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .btn:hover { background-color: #218838; }
+        .error-list { color: #dc3545; background-color: #f8d7da; padding: 10px; border-radius: 4px; list-style-type: none; margin-bottom: 15px; padding-left: 20px; font-size: 14px; }
+        .register-link { text-align: center; margin-top: 15px; font-size: 14px; }
+        .register-link a { color: #007bff; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Log In</h2>
+
+    <!-- Display login errors (like wrong password) if they exist -->
+    {% if form.errors %}
+        <ul class="error-list">
+            <li>Your username and password didn't match. Please try again.</li>
+        </ul>
+    {% endif %}
+    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" class="btn">Log In</button>
+    </form>
+
+    <div class="register-link">
+        Don't have an account? <a href="{% url 'users:register' %}">Register here</a>
+    </div>
+</div>
+
+</body>
+</html>
