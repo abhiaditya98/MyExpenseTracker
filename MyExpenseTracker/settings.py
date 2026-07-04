@@ -118,6 +118,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# This gives Django an absolute system folder path to store compiled assets
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Ensures WhiteNoise handles and compresses your CSS files cleanly on Render
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
