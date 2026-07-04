@@ -119,3 +119,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com'
+]
