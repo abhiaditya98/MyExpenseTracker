@@ -123,3 +123,12 @@ ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com'
 ]
+
+# Automatically log out after 15 minutes of doing nothing
+SESSION_COOKIE_AGE = 900  
+
+# Automatically log out if the browser tab is closed before 15 minutes
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+# Reset the 15-minute countdown clock every time they load a page or save an entry
+SESSION_SAVE_EVERY_REQUEST = True

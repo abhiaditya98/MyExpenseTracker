@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expense Pie Chart</title>
+    <!-- Include Chart.js library from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+        background-color: #f4f7f9;
+      }
+      .chart-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
+    .btn-primary {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }       
+    </style>
+  </head>
+  <body>
+
+    <!-- CRITICAL FIX: Injecting the Django data blocks into the DOM -->
+    {{ labels|json_script:"django-labels-data" }}
+    {{ data_values|json_script:"django-data-values" }}
+
+    <div class="chart-container">
+      {% if title %}
+        <h1>{{ title }}</h1>
+      {% endif %}
+
+      <!-- The canvas element where Chart.js will draw the pie chart -->
+      <div style="height: 400px">
+        <canvas id="expensePieChart"></canvas>
+      </div>
+
+      {% if labels and data_values %}
+        <p style="text-align: center; margin-top: 30px; font-style: italic">
+          Visualization based on data aggregated from Django ORM.
+        </p>
+      {% else %}
+        <p style="text-align: center; color: #666; padding: 20px">
+          No expense data found for this user to generate a chart.
+        </p>
+      {% endif %}
+        <!-- Uses Django's URL template tag to find the path automatically -->
+        <a  href="{% url 'users:home' %}" class="btn-primary">
+            Go back to Home Page
+        </a>      
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Securely pull and parse data from Django's json_script blocks
+          const labelsBlock = document.getElementById('django-labels-data');
+          const dataValuesBlock = document.getElementById('django-data-values');
+
+          // Added validation to prevent runtime errors if elements don't exist
+          if (!labelsBlock || !dataValuesBlock) {
+              console.error("Django data blocks missing from the template.");
+              return;
+          }
+
+          const labels = JSON.parse(labelsBlock.textContent);
+          const dataValues = JSON.parse(dataValuesBlock.textContent);
+
+          // Safety check to ensure data arrays are not empty
+          if (!labels || labels.length === 0 || !dataValues || dataValues.length === 0) {
+              console.warn("Labels or data values arrays are empty.");
+              return;
+          }
+
+          const ctx = document.getElementById('expensePieChart').getContext('2d');
+
+          new Chart(ctx, {
+              type: 'pie',
+              data: {
+                  labels: labels,
+                  datasets: [{
+                      label: 'Total Spent (in Currency)',
+                      data: dataValues,
+                      backgroundColor: [
+                          'rgba(255, 99, 132, 0.7)',
+                          'rgba(54, 162, 235, 0.7)',
+                          'rgba(255, 206, 86, 0.7)',
+                          'rgba(75, 192, 192, 0.7)',
+                          'rgba(153, 102, 255, 0.7)',
+                      ],
+                      borderColor: [
+                          'rgba(255, 99, 132, 1)',
+                          'rgba(54, 162, 235, 1)',
+                          'rgba(255, 206, 86, 1)',
+                          'rgba(75, 192, 192, 1)',
+                          'rgba(153, 102, 255, 1)',
+                      ],
+                      borderWidth: 1
+                  }]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                      title: {
+                          display: false,
+                      },
+                      tooltip: {
+                          callbacks: {
+                              label: function(context) {
+                                  let label = context.label || '';
+                                  if (label) {
+                                      label += ': ';
+                                  }
+                                  return label + '₹' + context.parsed.toLocaleString('en-IN');
+                              }
+                          }
+                      }
+                  }
+              }
+          });
+      }); // CRITICAL FIX: Added missing closing bracket and parenthesis here
+    </script>
+  </body>
+</html>

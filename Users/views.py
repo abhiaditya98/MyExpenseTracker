@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.db.models import Sum
 # Create your views here.
-@login_required(login_url='users:register')
+@login_required(login_url='users:login')
 def home(request):
     current_user = request.user
     today = date.today()

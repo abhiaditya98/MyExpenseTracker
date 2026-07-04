@@ -10,4 +10,5 @@ urlpatterns = [
     path('income/add', expenses_views.add_income, name = 'add_income'),
     path('category/add', expenses_views.add_category, name = 'add_category'),
     path('transaction/delete/<int:transaction_id>/', expenses_views.delete_transaction, name = 'delete_transaction'),
+    path('chart/piechart',expenses_views.piechart,name='piechart'),
 ]
