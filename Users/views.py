@@ -5,7 +5,8 @@ from decimal import Decimal
 from datetime import date
 from Expenses.models import Category, Transaction
 from django.contrib.auth.decorators import login_required
-
+from .forms import CustomUserCreationForm
+from django.contrib import messages
 from django.db.models import Sum
 # Create your views here.
 @login_required(login_url='users:login')
@@ -37,12 +38,14 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             form.save()
+            username = form.cleaned_data.get('UserName')
+            messages.success(request, f'Account created for {username}!')
             return redirect('users:login')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'register.html',{"form":form})
 
 def login(request):
