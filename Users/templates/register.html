@@ -267,6 +267,16 @@
         Already have an account?
         <a href="{% url 'users:login' %}">Log in here</a>
       </div>
+
+      <div class="error-container">
+        {% if form.errors %}
+          <div class="error-text">Please correct the errors above and try again.</div>
+        {% endif %}
+        {% if error_message %}
+          <div class="error-text">{{ error_message }}</div>
+        {% endif %}
+      </div>
+
     </div>
 
     <script>

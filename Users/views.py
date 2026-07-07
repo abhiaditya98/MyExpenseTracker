@@ -8,6 +8,9 @@ from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.db.models import Sum
+from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import User
+
 # Create your views here.
 @login_required(login_url='users:login')
 def home(request):
@@ -36,17 +39,45 @@ def home(request):
     }
     return render(request, 'home.html', context)
 
+from django.contrib.auth.hashers import make_password
+
 def register(request):
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
-        if form.is_valid():
+    try:
+        if request.method == 'POST':
+            # Create a new user object from POST data, but don't save yet!
+            print(f"Request POST data: {request.POST}")  # Debugging line to check POST data
+            form = CustomUserCreationForm(request.POST)
+            
+            if form.is_valid():
+                # Create a new user instance but don't save to the database yet
+                new_user = form.save(commit=False)
+                
+                # Set the username and email from the form data
+                new_user.username = form.cleaned_data['UserName']
+                new_user.email = form.cleaned_data['Email']
+                
+                # Hash the password before saving
+                new_user.password = make_password(form.cleaned_data['password1'])
+                
+                # Save the user to the database
+                new_user.save()
+                
+                # # Optionally, you can log the user in immediately after registration
+                django_login(request, new_user, backend='Users.backends.EmailOrUsernameBackend')
+                
+                # Redirect to home or any other page after successful registration
+                return redirect('users:home')
+            # Save the user to the database (this should set the correct username and hashed password)
             form.save()
-            username = form.cleaned_data.get('UserName')
-            messages.success(request, f'Account created for {username}!')
-            return redirect('users:login')
-    else:
-        form = CustomUserCreationForm()
-    return render(request, 'register.html',{"form":form})
+            
+            # Now you can return a success message or redirect to another page...
+        else:
+            form = CustomUserCreationForm()  # Initialize an empty form if not POST
+        return render(request, 'register.html', {'form': form})
+    except Exception as e:
+        # Handle the exception, e.g., log it or display an error message
+        return render(request, 'register.html', {'form': form, 'error_message': str(e)})
+
 
 def login(request):
     if request.method == 'POST':
@@ -56,6 +87,11 @@ def login(request):
             return redirect('users:home')
     else:
         form = AuthenticationForm()
+    # 📌 THIS LINE IS REQUIRED: This updates the dynamic label rendering in your HTML
+    form.fields['username'].label = "Username / Email"
+    form.fields['username'].widget.attrs['placeholder'] = "Enter your username or email"
+       
+
     return render(request, 'login.html', {"form":form})
 
 def logout(request):
