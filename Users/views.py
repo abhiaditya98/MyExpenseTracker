@@ -31,22 +31,15 @@ def home(request):
 
     print(f"user_txns_for_current_month------{user_txns_for_current_month}")
 
-    # # Perform calculations
-    # total_income = user_txns.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
-    # total_expenses = user_txns.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
-    # net_balance = total_income - total_expenses
-
-    # Fetch the last 5 transactions for the current user
-    print(today)
     # today_transactions = Transaction.objects.filter(user=current_user,date__date = today).order_by('-date')
     recent_transactions = Transaction.objects.filter(user=current_user).order_by('-date')[:5]
 
     context = {
         'transactions': recent_transactions,
         'categories': user_categories,
-        'total_income': f"{user_txns_for_current_month['total_income']:,.2f}",
-        'total_expenses': f"{user_txns_for_current_month['total_expenses']:,.2f}",
-        'net_balance': f"{user_txns_for_current_month['total_income'] - user_txns_for_current_month['total_expenses']:,.2f}",
+        'total_income': f"{(user_txns_for_current_month['total_income'] or 0):,.2f}",
+        'total_expenses': f"{(user_txns_for_current_month['total_expenses'] or 0):,.2f}",
+        'net_balance': f"{(user_txns_for_current_month['total_income'] or 0) - (user_txns_for_current_month['total_expenses'] or 0):,.2f}",
     }
     return render(request, 'home.html', context)
 
