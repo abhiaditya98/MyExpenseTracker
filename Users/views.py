@@ -69,6 +69,14 @@ def register(request):
                 # # Optionally, you can log the user in immediately after registration
                 django_login(request, new_user, backend='Users.backends.EmailOrUsernameBackend')
                 
+                default_categories = [
+                    Category(user = request.user,name = "Food"),
+                    Category(user = request.user,name = "Transport"),
+                    Category(user = request.user,name = "Groceries")
+                ]
+
+                DefaultCategories = Category.objects.bulk_create(default_categories)
+
                 # Redirect to home or any other page after successful registration
                 return redirect('users:home')
             # Save the user to the database (this should set the correct username and hashed password)
@@ -103,30 +111,3 @@ def logout(request):
         django_logout(request)
         return redirect('users:login')
     return redirect('users:home')
-
-# @login_required
-# def home(request):
-#     current_user = request.user
-#     today = date.today()
-
-#     # Fetch records for the current user and month
-#     user_txns = Transaction.objects.filter(
-#         user=current_user, 
-#         date__year=today.year, 
-#         date__month=today.month
-#     )
-#     user_categories = Category.objects.filter(user=current_user)
-
-#     # Perform calculations
-#     total_income = user_txns.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
-#     total_expenses = user_txns.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
-#     net_balance = total_income - total_expenses
-
-#     context = {
-#         'transactions': user_txns,
-#         'categories': user_categories,
-#         'total_income': f"{total_income:,.2f}",
-#         'total_expenses': f"{total_expenses:,.2f}",
-#         'net_balance': f"{net_balance:,.2f}",
-#     }
-#     return render(request, 'home.html', context)   
