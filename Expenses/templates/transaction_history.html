@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Transaction History</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial,
+          sans-serif;
+        background: linear-gradient(135deg, #eef2ff, #f8fafc);
+        color: #1f2937;
+        min-height: 100vh;
+        padding: 35px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      /* Header */
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        background: white;
+        padding: 22px 28px;
+        border-radius: 18px;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+      }
+
+      .header h1 {
+        font-size: 28px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        color: #6b7280;
+        margin-top: 5px;
+        font-size: 15px;
+      }
+
+      .back-btn {
+        text-decoration: none;
+        background: #2563eb;
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: 0.25s;
+      }
+
+      .back-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-2px);
+      }
+
+      /* Card */
+
+      .card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+      }
+
+      /* Table */
+
+      .table-wrapper {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 850px;
+      }
+
+      thead th {
+        position: sticky;
+        top: 0;
+
+        background: #f8fafc;
+
+        color: #374151;
+
+        font-size: 14px;
+
+        text-transform: uppercase;
+
+        letter-spacing: 0.5px;
+
+        padding: 18px;
+
+        text-align: left;
+
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      tbody td {
+        padding: 18px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      tbody tr {
+        transition: 0.25s;
+      }
+
+      tbody tr:hover {
+        background: #f9fbff;
+      }
+
+      tbody tr:nth-child(even) {
+        background: #fcfcfd;
+      }
+
+      .amount-income {
+        color: #16a34a;
+
+        font-weight: 700;
+      }
+
+      .amount-expense {
+        color: #dc2626;
+
+        font-weight: 700;
+      }
+
+      .badge {
+        display: inline-block;
+
+        padding: 6px 12px;
+
+        border-radius: 20px;
+
+        font-size: 13px;
+
+        font-weight: 600;
+      }
+
+      .badge-income {
+        background: #dcfce7;
+
+        color: #166534;
+      }
+
+      .badge-expense {
+        background: #fee2e2;
+
+        color: #991b1b;
+      }
+
+      /* Delete Button */
+
+      .delete-btn {
+        background: #ef4444;
+
+        color: white;
+
+        border: none;
+
+        padding: 8px 14px;
+
+        border-radius: 10px;
+
+        cursor: pointer;
+
+        transition: 0.2s;
+      }
+
+      .delete-btn:hover {
+        background: #dc2626;
+
+        transform: translateY(-2px);
+      }
+
+      /* Empty */
+
+      .empty {
+        text-align: center;
+
+        padding: 60px;
+
+        color: #6b7280;
+      }
+
+      /* Pagination */
+
+      .pagination {
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+
+        gap: 8px;
+
+        padding: 25px;
+
+        flex-wrap: wrap;
+      }
+
+      .pagination a {
+        text-decoration: none;
+
+        padding: 10px 16px;
+
+        border-radius: 10px;
+
+        background: #fff;
+
+        color: #374151;
+
+        border: 1px solid #e5e7eb;
+
+        transition: 0.25s;
+      }
+
+      .pagination a:hover {
+        background: #2563eb;
+
+        color: white;
+
+        border-color: #2563eb;
+      }
+
+      .pagination .current {
+        background: #2563eb;
+
+        color: white;
+
+        padding: 10px 16px;
+
+        border-radius: 10px;
+
+        font-weight: 600;
+      }
+
+      @media (max-width: 768px) {
+        .header {
+          flex-direction: column;
+
+          align-items: flex-start;
+
+          gap: 18px;
+        }
+
+        body {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <div>
+          <h1>📜 Transaction History</h1>
+
+          <p class="subtitle">View all your income and expense records.</p>
+        </div>
+
+        <a href="{% url 'users:home' %}" class="back-btn"> ← Dashboard </a>
+      </div>
+
+      <div class="card">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+
+                <th>Title</th>
+
+                <th>Category</th>
+
+                <th>Type</th>
+
+                <th>Amount</th>
+
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for txn in page_obj %}
+
+              <tr>
+                <td>{{ txn.date|date:"d M Y, H:i" }}</td>
+
+                <td>{{ txn.title }}</td>
+
+                <td>{{ txn.category.name|default:"Uncategorized" }}</td>
+
+                <td>
+                  {% if txn.transaction_type == "income" %}
+
+                  <span class="badge badge-income"> Income </span>
+
+                  {% else %}
+
+                  <span class="badge badge-expense"> Expense </span>
+
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if txn.transaction_type == "income" %}
+
+                  <span class="amount-income"> + ₹{{ txn.amount }} </span>
+
+                  {% else %}
+
+                  <span class="amount-expense"> − ₹{{ txn.amount }} </span>
+
+                  {% endif %}
+                </td>
+
+                <td>
+                  <form
+                    method="POST"
+                    action="{% url 'expenses:delete_transaction' transaction_id=txn.id %}"
+                    onsubmit="return confirm('Delete this transaction?');"
+                  >
+                    {% csrf_token %}
+
+                    <button class="delete-btn">Delete</button>
+                  </form>
+                </td>
+              </tr>
+
+              {% empty %}
+
+              <tr>
+                <td colspan="6" class="empty">No transactions found.</td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          {% if page_obj.has_previous %}
+
+          <a href="?page=1">« First</a>
+
+          <a href="?page={{ page_obj.previous_page_number }}"> ‹ Prev </a>
+
+          {% endif %}
+
+          <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </span>
+
+          {% if page_obj.has_next %}
+
+          <a href="?page={{ page_obj.next_page_number }}"> Next › </a>
+
+          <a href="?page={{ page_obj.paginator.num_pages }}"> Last » </a>
+
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

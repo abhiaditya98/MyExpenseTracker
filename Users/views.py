@@ -38,11 +38,11 @@ def home(request):
 
     # Fetch the last 5 transactions for the current user
     print(today)
-    today_transactions = Transaction.objects.filter(user=current_user,date__date = today).order_by('-date')
-    # today_transactions = Transaction.objects.filter(user=current_user).order_by('-date')
+    # today_transactions = Transaction.objects.filter(user=current_user,date__date = today).order_by('-date')
+    recent_transactions = Transaction.objects.filter(user=current_user).order_by('-date')[:5]
 
     context = {
-        'transactions': today_transactions,
+        'transactions': recent_transactions,
         'categories': user_categories,
         'total_income': f"{user_txns_for_current_month['total_income']:,.2f}",
         'total_expenses': f"{user_txns_for_current_month['total_expenses']:,.2f}",

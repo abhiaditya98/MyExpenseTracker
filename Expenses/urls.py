@@ -14,4 +14,5 @@ urlpatterns = [
     path('transaction/delete/<int:transaction_id>/', expenses_views.delete_transaction, name = 'delete_transaction'),
     path('transaction/edit/<int:transaction_id>/', expenses_views.edit_transaction, name = 'edit_transaction'),
     path('chart/piechart',expenses_views.piechart,name='piechart'),
+    path("transactions/",expenses_views.transaction_history,name="transaction_history"),
 ]

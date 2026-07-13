@@ -9,7 +9,7 @@ from decimal import Decimal
 from datetime import date
 from django.db.models import Sum
 import Expenses.forms as forms
-
+from django.core.paginator import Paginator
 
 @login_required(login_url="users:login")
 def add_expense(request):
@@ -134,3 +134,16 @@ def piechart(request):
         "title": "Expense Distribution by Category",
     }
     return render(request, "piechart.html", context)
+
+
+@login_required(login_url="users:login")
+def transaction_history(request):
+    All_Transactions = Transaction.objects.filter(
+        user = request.user).order_by("-date")
+
+    paginator = Paginator(All_Transactions, 10)   # 10 per page
+    page_number = request.GET.get("page")
+
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "transaction_history.html",{"page_obj":page_obj})
