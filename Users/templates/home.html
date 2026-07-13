@@ -6,13 +6,15 @@
     <title>My Expense Tracker - Home</title>
     <style>
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background-color: #f4f6f9;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        background: linear-gradient(135deg, #f8fafc, #eef2ff);
         margin: 0;
         padding: 10px;
         color: #333;
       }
-      
+
       .dashboard-container {
         max-width: 1000px;
         margin: 0 auto;
@@ -23,13 +25,19 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+        padding: 20px 24px;
+        border-radius: 20px;
+
+        background: rgba(255,255,255,0.75);
+        backdrop-filter: blur(12px);
+
+        border: 1px solid rgba(255,255,255,0.5);
+
+        box-shadow:
+          0 10px 25px rgba(15,23,42,0.06);
       }
-      
+
       header h2 {
         margin: 0;
         font-size: 1.25rem;
@@ -58,10 +66,17 @@
 
       .card {
         background: white;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        text-align: center;
+        padding: 20px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.6);
+        box-shadow:
+          0 10px 25px rgba(15, 23, 42, 0.06),
+          0 2px 8px rgba(15, 23, 42, 0.04);
+        transition: all 0.25s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-4px);
       }
 
       .card h3 {
@@ -74,13 +89,21 @@
 
       .card p {
         margin: 0;
-        font-size: 22px;
-        font-weight: bold;
+        font-size: 24px;
+        font-weight: 700;
       }
 
-      .text-income, .income { color: #28a745; }
-      .text-expense, .expense { color: #dc3545; }
-      .balance { color: #007bff; }
+      .text-income,
+      .income {
+        color: #28a745;
+      }
+      .text-expense,
+      .expense {
+        color: #dc3545;
+      }
+      .balance {
+        color: #007bff;
+      }
 
       /* Main Content Layout Split */
       .main-content {
@@ -91,17 +114,23 @@
 
       .section-block {
         background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        border-radius: 20px;
+
+        box-shadow:
+          0 12px 30px rgba(15,23,42,0.06),
+          0 2px 8px rgba(15,23,42,0.04);
+
+        border: 1px solid #eef2f7;
       }
 
       .section-block h3 {
         margin-top: 0;
         margin-bottom: 15px;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         border-bottom: 1px solid #f0f0f0;
         padding-bottom: 10px;
+        font-weight: 700;
       }
 
       /* Responsive Table Wrapper */
@@ -120,7 +149,8 @@
         min-width: 500px; /* Forces readable layout inside the scrollable container on mobile */
       }
 
-      th, td {
+      th,
+      td {
         text-align: left;
         padding: 12px;
         border-bottom: 1px solid #eee;
@@ -170,21 +200,28 @@
 
       .submit-btn {
         width: 100%;
-        padding: 12px;
-        background-color: #007bff;
+        padding: 13px;
         border: none;
-        border-radius: 6px;
+        border-radius: 12px;
         color: white;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
         cursor: pointer;
-        transition: background-color 0.2s;
-        display: block;
+
+        transition: all 0.25s ease;
+
       }
 
-      .submit-btn:hover { background-color: #0056b3; }
-      .category-btn { background-color: #6c757d; }
-      .category-btn:hover { background-color: #5a6268; }
+      .submit-btn:hover {
+        background-color: #0056b3;
+        transform: translateY(-2px);
+      }
+      .category-btn {
+        background-color: #6c757d;
+      }
+      .category-btn:hover {
+        background-color: #5a6268;
+      }
 
       .btn-primary {
         display: block;
@@ -198,7 +235,9 @@
         margin-top: 15px;
         transition: background-color 0.2s;
       }
-      .btn-primary:hover { background-color: #0056b3; }
+      .btn-primary:hover {
+        background-color: #0056b3;
+      }
 
       .right-column-stack {
         display: flex;
@@ -208,9 +247,15 @@
 
       /* MEDIA QUERIES FOR TABLETS AND DESKTOPS */
       @media (min-width: 576px) {
-        body { padding: 20px; }
-        .stats-grid { grid-template-columns: repeat(3, 1fr); }
-        header h2 { font-size: 1.5rem; }
+        body {
+          padding: 20px;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        header h2 {
+          font-size: 1.5rem;
+        }
       }
 
       @media (min-width: 768px) {
@@ -222,6 +267,69 @@
           padding: 10px 20px;
         }
       }
+      /* CSS */
+      .btn-aesthetic {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 24px;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: #ffffff;
+          background-color: #dc3545; /* Premium Emerald Green */
+          border: none;
+          border-radius: 50px; /* Fully pill-shaped */
+          text-decoration: none;
+          box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.2), 0 2px 4px -1px rgba(16, 185, 129, 0.1);
+          transition: all 0.2s ease-in-out;
+          cursor: pointer;
+      }
+
+      .btn-aesthetic:hover {
+          background-color: #c82333;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+      }
+
+      .btn-aesthetic:active {
+          transform: translateY(0);
+      }
+
+      .btn-icon {
+          font-size: 1.2rem;
+          line-height: 1;
+      }
+      .delete-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .delete-btn:hover {
+        background: #dc2626;
+        transform: scale(1.05);
+      }
+      .card,
+      .section-block {
+        animation: fadeUp 0.5s ease;
+      }
+
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }      
     </style>
   </head>
   <body>
@@ -229,7 +337,11 @@
       <!-- Top Navigation Header -->
       <header>
         <h2>Welcome, {{ user.username }}!</h2>
-        <form method="POST" action="{% url 'users:logout' %}" style="display: inline">
+        <form
+          method="POST"
+          action="{% url 'users:logout' %}"
+          style="display: inline"
+        >
           {% csrf_token %}
           <button type="submit" class="logout-btn">Log Out</button>
         </form>
@@ -255,7 +367,13 @@
       <div class="main-content">
         <!-- Left Side Column: Ledger Transactions List History Table -->
         <div class="section-block">
-          <h3>Transaction History</h3>
+          
+          <!-- HTML -->
+          <a href="{% url 'expenses:add_expense_from_form' %}" class="btn-aesthetic">
+              <span class="btn-icon">+</span> Add Expense
+          </a>
+
+          <h3>Today's Transactions</h3>
           <div class="table-responsive">
             <table>
               <thead>
@@ -269,52 +387,53 @@
               </thead>
               <tbody>
                 {% for txn in transactions %}
-                  <tr>
-                    <td>{{ txn.date|date:"d-m-Y" }}</td>
-                    <td>{{ txn.title }}</td>
-                    <td>{{ txn.category.name|default:"Uncategorized" }}</td>
-                    <td>
-                      <span class="{% if txn.transaction_type == 'income' %}text-income{% else %}text-expense{% endif %}">
-                        {% if txn.transaction_type == 'expense' %}-{% else %}+{% endif %}&#x20B9;{{ txn.amount|default:"0.00" }}
-                      </span>
-                    </td>
-                    <td class="action-column-cell">
-                      <form
-                        method="POST"
-                        action="{% url 'expenses:delete_transaction' transaction_id=txn.id %}"
-                        onsubmit="return confirm('Are you sure you want to delete this entry?');"
-                        style="display: inline"
+                <tr>
+                  <td>{{ txn.date|date:"d-m-Y H:i" }}</td>
+                  <td>{{ txn.title }}</td>
+                  <td>{{ txn.category.name|default:"Uncategorized" }}</td>
+
+                  <td>
+                    <span
+                      class="{% if txn.transaction_type == 'income' %}text-income{% else %}text-expense{% endif %}"
+                    >
+                      {% if txn.transaction_type == 'expense' %}-{% else %}+{% endif %}&#x20B9;
+                      {{ txn.amount|default:"0.00" }}
+                    </span>
+                  </td>
+
+                  <td class="action-column-cell">
+                    <form
+                      method="POST"
+                      action="{% url 'expenses:delete_transaction' transaction_id=txn.id %}"
+                      onsubmit="
+                        return confirm(
+                          'Are you sure you want to delete this entry?',
+                        );
+                      "
+                      style="display: inline"
+                    >
+                      {% csrf_token %}
+                      <button
+                        type="submit"
+                        class = "delete-btn"
                       >
-                        {% csrf_token %}
-                        <button
-                          type="submit"
-                          style="
-                            background-color: #dc3545;
-                            color: white;
-                            border: none;
-                            padding: 6px 12px;
-                            border-radius: 4px;
-                            cursor: pointer;
-                            font-size: 13px;
-                          "
-                        >
-                          Delete
-                        </button>
-                      </form>
-                    </td>
-                  </tr>
+                        Delete
+                      </button>
+                    </form>
+                  </td>
+                </tr>
                 {% empty %}
-                  <tr>
-                    <td colspan="5" style="text-align: center; color: #888">
-                      No transactions logged this month.
-                    </td>
-                  </tr>
+                <tr>
+                  <td colspan="5" style="text-align: center; color: #888">
+                    No transactions logged today.
+                  </td>
+                </tr>
                 {% endfor %}
               </tbody>
             </table>
           </div>
-          
-          <h4 style="margin-top: 20px; margin-bottom: 5px;">Analytics</h4>
+
+          <h4 style="margin-top: 20px; margin-bottom: 5px">Analytics</h4>
           <a href="{% url 'expenses:piechart' %}" class="btn-primary">
             View Pie Chart Page
           </a>
@@ -355,7 +474,7 @@
                 <select id="exp_category" name="category">
                   <option value="">-- No Category --</option>
                   {% for cat in categories %}
-                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                  <option value="{{ cat.id }}">{{ cat.name }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -402,7 +521,7 @@
                 <select id="inc_category" name="category">
                   <option value="">-- No Category --</option>
                   {% for cat in categories %}
-                    <option value="{{ cat.id }}">{{ cat.name }}</option>
+                  <option value="{{ cat.id }}">{{ cat.name }}</option>
                   {% endfor %}
                 </select>
               </div>

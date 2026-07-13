@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
@@ -6,6 +8,7 @@ from Expenses.models import Category, Transaction
 from decimal import Decimal
 from datetime import date
 from django.db.models import Sum
+import Expenses.forms as forms
 
 
 @login_required(login_url="users:login")
@@ -17,7 +20,7 @@ def add_expense(request):
             if category_id
             else None
         )
-
+        print(f"Input data - {request.POST}, Category object - {category_obj}")  # Debugging line to check input data and category object
         Transaction.objects.create(
             user=request.user,
             title=request.POST.get("title"),
@@ -26,6 +29,26 @@ def add_expense(request):
             category=category_obj,
         )
     return redirect("users:home")
+
+@login_required(login_url="users:login")
+def add_expense_from_form(request):
+    return render(request, "add_expense.html", {"form": forms.AddExpenseForm(user=request.user)})
+
+@login_required(login_url="users:login")
+def add_expense_from_form_submission(request):
+    if request.method == "POST":
+        form = forms.AddExpenseForm(request.POST, user=request.user)
+        if form.is_valid():
+            category = form.cleaned_data["Category"]
+            Transaction.objects.create(
+                user=request.user,
+                title=form.cleaned_data["Title"],
+                amount=form.cleaned_data["Amount"],
+                transaction_type="expense",
+                category=category,
+            )
+            return redirect("users:home")
+
 
 
 @login_required(login_url="users:login")
@@ -65,6 +88,16 @@ def delete_transaction(request, transaction_id):
         ).first()
         if transaction:
             transaction.delete()
+    return redirect("users:home")
+
+@login_required(login_url="users:login")
+def edit_transaction(request, transaction_id):
+    if request.method == "PATCH":
+        transaction = Transaction.objects.filter(
+            id=transaction_id, user=request.user
+        ).first()
+        if transaction:
+            transaction.update()
     return redirect("users:home")
 
 

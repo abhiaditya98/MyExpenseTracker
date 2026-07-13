@@ -7,7 +7,7 @@ from Expenses.models import Category, Transaction
 from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib import messages
-from django.db.models import Sum
+from django.db.models import Sum,Q
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 
@@ -18,24 +18,35 @@ def home(request):
     today = date.today()
 
     # Fetch records for the current user and month
-    user_txns = Transaction.objects.filter(
+    user_txns_for_current_month = Transaction.objects.filter(
         user=current_user, 
         date__year=today.year, 
-        date__month=today.month
+        date__month=today.month,
+        # date = today
+    ).aggregate(
+        total_income = Sum('amount', filter = Q(transaction_type = 'income')),
+        total_expenses = Sum('amount', filter = Q(transaction_type = 'expense'))
     )
-    user_categories = Category.objects.filter(user=current_user)
+    user_categories = Category.objects.filter(user=current_user)  
 
-    # Perform calculations
-    total_income = user_txns.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
-    total_expenses = user_txns.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
-    net_balance = total_income - total_expenses
+    print(f"user_txns_for_current_month------{user_txns_for_current_month}")
+
+    # # Perform calculations
+    # total_income = user_txns.filter(transaction_type='income').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
+    # total_expenses = user_txns.filter(transaction_type='expense').aggregate(Sum('amount'))['amount__sum'] or Decimal('0.00')
+    # net_balance = total_income - total_expenses
+
+    # Fetch the last 5 transactions for the current user
+    print(today)
+    today_transactions = Transaction.objects.filter(user=current_user,date__date = today).order_by('-date')
+    # today_transactions = Transaction.objects.filter(user=current_user).order_by('-date')
 
     context = {
-        'transactions': user_txns,
+        'transactions': today_transactions,
         'categories': user_categories,
-        'total_income': f"{total_income:,.2f}",
-        'total_expenses': f"{total_expenses:,.2f}",
-        'net_balance': f"{net_balance:,.2f}",
+        'total_income': f"{user_txns_for_current_month['total_income']:,.2f}",
+        'total_expenses': f"{user_txns_for_current_month['total_expenses']:,.2f}",
+        'net_balance': f"{user_txns_for_current_month['total_income'] - user_txns_for_current_month['total_expenses']:,.2f}",
     }
     return render(request, 'home.html', context)
 

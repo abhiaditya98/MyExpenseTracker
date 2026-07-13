@@ -41,7 +41,7 @@ class Transaction(models.Model):
         blank=True,
         related_name='transactions'
     )
-    date = models.DateField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-date']  # Shows newest transactions first by default

@@ -95,7 +95,9 @@ DATABASES = {
         'PORT': os.getenv("PROD_DB_PORT"),
         'OPTIONS': {
             'sslmode': 'require',  # <--- THIS FIXES THE SSL/TLS REQUIRED ERROR!
-        }              
+        }  ,
+        'CONN_MAX_AGE': 0,    
+                
     }    
 }
 
